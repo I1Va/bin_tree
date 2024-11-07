@@ -2,6 +2,7 @@
 #include <stdlib.h>
 
 #include "bin_tree_proc.h"
+#include "bin_tree_loger.h"
 #include "error_processing.h"
 #include "general.h"
 #include "bin_tree_err_proc.h"
@@ -147,7 +148,7 @@ bool bin_tree_destroy(bin_tree_t *tree) {
 
         FREE(node_ptr)
     }
-    DUMP(&tree->node_stack, stdout);
+    DUMP(&tree->node_stack, stdout, tree_node_fprintf);
     tree->root = NULL;
     tree->n_nodes = 0;
     return true;

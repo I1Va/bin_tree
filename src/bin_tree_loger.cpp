@@ -183,6 +183,10 @@ void bin_tree_log_html_insert_image(FILE *log_output_file_ptr, char short_img_pa
     fprintf(log_output_file_ptr, "<img src=\"%s\" width=\"%d%%\">\n", short_img_path, width_percent);
 }
 
+void tree_node_fprintf(FILE *stream, void *elem_ptr) {
+    fprintf(stream, "{%d}", ((bin_tree_elem_t *) elem_ptr)->data);
+}
+
 bool bin_tree_generate_graph_img(bin_tree_t *tree, char short_img_path[]) {
     log_dir_t log_dir_obj = bin_tree_make_graphviz_dirs(tree->log_file_path);
 

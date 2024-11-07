@@ -67,6 +67,8 @@ void graphviz_make_edge(FILE *graphviz_code_file, bin_tree_elem_t *node_ptr1, bi
 
 void bin_tree_log_html_insert_image(FILE *log_output_file_ptr, char short_img_path[], int width_percent);
 
+void tree_node_fprintf(FILE *stream, void *elem_ptr);
+
 bool bin_tree_generate_graph_img(bin_tree_t *tree, char short_img_path[]);
 
 #define TreeLogVar(log_output_file_ptr, log_type, fmt, ...) log_var_print(log_output_file_ptr, log_type, __FILE_NAME__, __PRETTY_FUNCTION__, __LINE__, fmt, ##__VA_ARGS__);
