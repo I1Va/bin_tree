@@ -47,7 +47,6 @@ bool bin_tree_dtor(bin_tree_t *tree) {
 
     for (size_t i = 0; i < tree->node_stack.size; i++) {
 
-        DUMP(&tree->node_stack);
         bin_tree_elem_t *node_ptr = *(bin_tree_elem_t **) stack_get_elem(&tree->node_stack, i, &last_stack_error);
         printf("deleting node : {%d}\n", node_ptr->data);
 
@@ -148,6 +147,7 @@ bool bin_tree_destroy(bin_tree_t *tree) {
 
         FREE(node_ptr)
     }
+    DUMP(&tree->node_stack, stdout);
     tree->root = NULL;
     tree->n_nodes = 0;
     return true;
