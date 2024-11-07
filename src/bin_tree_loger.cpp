@@ -9,9 +9,11 @@
 #include <stdarg.h>
 
 #include "bin_tree_proc.h"
+#include "error_processing.h"
 #include "general.h"
 #include "bin_tree_loger.h"
 #include "bin_tree_err_proc.h"
+#include "stack_funcs.h"
 
 
 // ON_DEBUG
@@ -148,7 +150,7 @@ log_dir_t bin_tree_make_graphviz_dirs(char log_file_path[]) {
 
 void graphviz_start_graph(FILE *graphviz_code_file) {
     fprintf(graphviz_code_file, "digraph G{\n");
-    fprintf(graphviz_code_file, "   rankdir=LR;\n");
+    fprintf(graphviz_code_file, "   rankdir=TB;\n");
 }
 
 void graphviz_end_graph(FILE *graphviz_code_file) {
@@ -157,16 +159,21 @@ void graphviz_end_graph(FILE *graphviz_code_file) {
 }
 
 void graphviz_make_node(FILE *graphviz_code_file, bin_tree_elem_t *node) { // FIXME: function depends on bin_tree_elem_value_t
-    fprintf(graphviz_code_file, "   NODE%p[pin=true,shape=\"box\",label=\"val: %d\nleft: %p\nright: %p\"];\n", node, node->data, node->left, node->right);
-}
+    fprintf(graphviz_code_file, "   NODE%p[pin=true,shape=\"Mrecord\",label=\"{data: %d | {<left> %p | <right> %p}}\"];\n", node, node->data, node->left, node->right);
+} //
 
 void graphviz_make_heavy_unvisible_edge(FILE *graphviz_code_file, bin_tree_elem_t *node_ptr1, bin_tree_elem_t *node_ptr2) {
     fprintf(graphviz_code_file, "   NODE%p -> NODE%p [weight=%d,color=\"white\"];\n", node_ptr1, node_ptr2, EDGE_MAX_WEIGHT);
     // FIXME: кажется, что делать рербра белыми - костыль
 }
 
-void graphviz_make_edge(FILE *graphviz_code_file, bin_tree_elem_t *node_ptr1, bin_tree_elem_t *node_ptr2, const char color[] = "black", int penwidth=SIMP_EDGE_WIDTH) {
-    fprintf(graphviz_code_file, "   NODE%p -> NODE%p [color=\"%s\",penwidth=%d];\n", node_ptr1, node_ptr2, color, penwidth);
+void graphviz_make_left_edge(FILE *graphviz_code_file, bin_tree_elem_t *node_ptr1, bin_tree_elem_t *node_ptr2, const char color[] = "black", int penwidth=SIMP_EDGE_WIDTH) {
+    fprintf(graphviz_code_file, "   NODE%p:left -> NODE%p [color=\"%s\",penwidth=%d];\n", node_ptr1, node_ptr2, color, penwidth);
+    // FIXME: кажется, что делать рербра белыми - костыль
+}
+
+void graphviz_make_right_edge(FILE *graphviz_code_file, bin_tree_elem_t *node_ptr1, bin_tree_elem_t *node_ptr2, const char color[] = "black", int penwidth=SIMP_EDGE_WIDTH) {
+    fprintf(graphviz_code_file, "   NODE%p:right -> NODE%p [color=\"%s\",penwidth=%d];\n", node_ptr1, node_ptr2, color, penwidth);
     // FIXME: кажется, что делать рербра белыми - костыль
 }
 
@@ -197,7 +204,34 @@ bool bin_tree_generate_graph_img(bin_tree_t *tree, char short_img_path[]) {
     // MAKING GRAPH
 
     graphviz_start_graph(graphviz_code_file);
-    fprintf_red(stdout, "THERE IS SHOULD BE GRAPH GENERATION\n");
+
+    for (size_t i = 0; i < tree->node_stack.size; i++) {
+        stk_err stk_last_err = STK_ERR_OK;
+        bin_tree_elem_t *node = *(bin_tree_elem_t **) stack_get_elem(&tree->node_stack, i, &stk_last_err);
+        if (stk_last_err != STK_ERR_OK) {
+            debug("stack_get_elem by idx [%lu] failed", i);
+            return false;
+        }
+
+        graphviz_make_node(graphviz_code_file, node);
+
+    }
+
+    for (size_t i = 0; i < tree->node_stack.size; i++) {
+        stk_err stk_last_err = STK_ERR_OK;
+        bin_tree_elem_t *node = *(bin_tree_elem_t **) stack_get_elem(&tree->node_stack, i, &stk_last_err);
+        if (stk_last_err != STK_ERR_OK) {
+            debug("stack_get_elem by idx [%lu] failed", i);
+            return false;
+        }
+        if (node->left) {
+            graphviz_make_left_edge(graphviz_code_file, node, node->left, "green", 2);
+        }
+        if (node->right) {
+            graphviz_make_right_edge(graphviz_code_file, node, node->right, "blue", 2);
+        }
+
+    }
 
     // for (int i = 0; i < tree->size; i++) {
     //     graphviz_make_node(graphviz_code_file, tree->data[i]);

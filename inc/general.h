@@ -17,12 +17,10 @@
 #define printf_grn(str_, ...) printf(GRN str_ WHT, ##__VA_ARGS__)
 #define printf_yel(str_, ...) printf(YEL str_ WHT, ##__VA_ARGS__)
 
-
 #define fprintf_red(stream, str_, ...) fprintf(stream, RED str_, ##__VA_ARGS__)
 #define fprintf_wht(stream, str_, ...) fprintf(stream, WHT str_, ##__VA_ARGS__)
 #define fprintf_grn(stream, str_, ...) fprintf(stream, GRN str_, ##__VA_ARGS__)
 #define fprintf_yel(stream, str_, ...) fprintf(stream, YEL str_, ##__VA_ARGS__)
-
 
 #define fprintf_html_red(stream, str_, ...) fprintf(stream, HTML_RED str_, ##__VA_ARGS__)
 #define fprintf_html_grn(stream, str_, ...) fprintf(stream, HTML_GRN str_, ##__VA_ARGS__)

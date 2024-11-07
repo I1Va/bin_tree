@@ -12,7 +12,7 @@
 #include "bin_tree_proc.h"
 
 const int EDGE_MAX_WEIGHT = 1024;
-const int SIMP_EDGE_WIDTH = 2;
+const int SIMP_EDGE_WIDTH = 5;
 
 enum bin_tree_log_t {
     DL_LOG_ANALYS = 0,
@@ -69,8 +69,8 @@ void bin_tree_log_html_insert_image(FILE *log_output_file_ptr, char short_img_pa
 
 bool bin_tree_generate_graph_img(bin_tree_t *tree, char short_img_path[]);
 
-#define treeLogVar(log_output_file_ptr, log_type, fmt, ...) log_var_print(log_output_file_ptr, log_type, __FILE_NAME__, __PRETTY_FUNCTION__, __LINE__, fmt, ##__VA_ARGS__);
+#define TreeLogVar(log_output_file_ptr, log_type, fmt, ...) log_var_print(log_output_file_ptr, log_type, __FILE_NAME__, __PRETTY_FUNCTION__, __LINE__, fmt, ##__VA_ARGS__);
 
-#define treeLogDump(tree) bin_tree_log_dump(tree, __FILE_NAME__, __PRETTY_FUNCTION__, __LINE__);
+#define TreeLogDump(tree) bin_tree_log_dump(tree, __FILE_NAME__, __PRETTY_FUNCTION__, __LINE__);
 
 #endif // bin_tree_LOGGER_H
