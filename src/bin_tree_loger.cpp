@@ -184,7 +184,7 @@ void bin_tree_log_html_insert_image(FILE *log_output_file_ptr, char short_img_pa
 }
 
 void tree_node_fprintf(FILE *stream, void *elem_ptr) {
-    fprintf(stream, "{%d}", ((bin_tree_elem_t *) elem_ptr)->data);
+    fprintf(stream, "{%d}", (*(bin_tree_elem_t **) elem_ptr)->data);
 }
 
 bool bin_tree_generate_graph_img(bin_tree_t *tree, char short_img_path[]) {

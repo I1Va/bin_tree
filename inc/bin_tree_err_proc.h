@@ -2,6 +2,7 @@
 #define BIN_TREE_ERR_PROC_H
 
 #include <string.h>
+
 #include "bin_tree_proc.h"
 
 enum bin_tree_err_t {
@@ -10,15 +11,18 @@ enum bin_tree_err_t {
     BT_ERR_ALLOC                    = 1ull << 1,
     BT_ERR_SYSTEM                   = 1ull << 2,
     BT_ERR_STACK                    = 1ull << 3,
+    BT_ERR_CYCLED                   = 1ull << 4,
 };
 
+
 const size_t ERR_DESCR_MAX_SIZE = 128;
+const size_t MAX_NODES_CNT = 1ull << 17;
 
 void bin_tree_err_get_descr(enum bin_tree_err_t err_code, char err_descr_str[]);
 
 void bin_tree_err_add(enum bin_tree_err_t *dest, enum bin_tree_err_t add);
 
-bin_tree_err_t bin_tree_verify(const bin_tree_t tree);
+void bin_tree_verify(const bin_tree_t tree, bin_tree_err_t *return_err);
 
 #ifdef _DEBUG
     #define DEBUG_BT_LIST_ERROR(err_code, str_, ...) {                                                      \

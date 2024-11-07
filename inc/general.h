@@ -1,6 +1,10 @@
-#ifndef DL_LIST_GENERAL_H
-#define DL_LIST_GENERAL_H
+#ifndef GENERAL_H
+#define GENERAL_H
 
+#include <string.h>
+
+const size_t date_nmemb = 16;
+const size_t time_nmemb = 16;
 
 #define GRN "\e[0;32m"
 #define WHT "\e[0;20m"
@@ -44,4 +48,4 @@
 #endif // _DEBUG
 
 
-#endif // DL_LIST_GENERAL_H
+#endif // GENERAL_H

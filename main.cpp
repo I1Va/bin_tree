@@ -3,6 +3,10 @@
 #include "bin_tree_loger.h"
 #include <cstdlib>
 
+#include "error_processing.h"
+#include "stack_funcs.h"
+#include "stack_output.h"
+
 const char logs_dir[] = "./logs";
 
 int main() {
@@ -19,16 +23,27 @@ int main() {
     tree.root = root;
 
     for (int i = 0; i < 20; i++) {
-        bin_tree_push_val(&tree, tree.root, rand() % 128);
+        int val = rand() % 128;
+        printf("added {%d}\n", val);
+        bin_tree_push_val(&tree, tree.root, val);
     }
 
     bin_tree_print(tree.root); printf("\n");
 
-    bin_tree_destroy(&tree);
-    // DEBUG_DL_LIST_ERROR(DL_list_verify(list), "")
+    stk_err last_stk_err = STK_ERR_OK;
+
+    bin_tree_elem_t *node1 = *(bin_tree_elem_t **)stack_get_elem(&tree.node_stack, 3, &last_stk_err);
+    bin_tree_elem_t *node2 = *(bin_tree_elem_t **)stack_get_elem(&tree.node_stack, 5, &last_stk_err);
+
+    node1->left = node2;
+    node2->right = node1;
+
+    bin_tree_verify(tree, &last_err);
+
+    DUMP(&tree.node_stack, stdout, tree_node_fprintf);
+
     TreeLogDump(&tree);
 
-    // // DL_list_insert(&list, 4, 52, &last_err);
 
 
     bin_tree_dtor(&tree);

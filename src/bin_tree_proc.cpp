@@ -133,27 +133,26 @@ void bin_tree_print(bin_tree_elem_t *node) {
     printf(")");
 }
 
-bool bin_tree_destroy(bin_tree_t *tree) {
+bool bin_tree_clear(bin_tree_t *tree) {
     stk_err last_stack_error = STK_ERR_OK;
 
-    for (size_t i = 0; i < tree->node_stack.size; i++) {
-        bin_tree_elem_t *node_ptr = *(bin_tree_elem_t **) stack_pop(&tree->node_stack, &last_stack_error);
+    size_t stk_start_size = tree->node_stack.size;
+    for (size_t i = 0; i < stk_start_size; i++) {
 
-        // printf("deleting node : {%d}\n", node_ptr->data);
+
+        bin_tree_elem_t *node_ptr = *(bin_tree_elem_t **) stack_get_last(&tree->node_stack, &last_stack_error);
+        stack_pop(&tree->node_stack, &last_stack_error);
+        FREE(node_ptr)
 
         if (last_stack_error != STK_ERR_OK) {
             debug("stack get elem by idx: [%lu] failed", i);
             return false;
         }
 
-        FREE(node_ptr)
+
     }
-    DUMP(&tree->node_stack, stdout, tree_node_fprintf);
+
     tree->root = NULL;
     tree->n_nodes = 0;
     return true;
-}
-
-void bin_tree_verify(bin_tree_elem_t tree) {
-
 }
