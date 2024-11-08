@@ -7,6 +7,9 @@
 
 #executing file is in ./build/$(OUTFILE_NAME) or in ./debug/$(OUTFILE_NAME)
 
+noop=
+space = $(noop) $(noop)
+
 MODE ?= RELEAZE #exist 3 modes: DEBUG/REALIZE/SECURITY
 # in DEBUG:
 # 	CFLAGS = $(CDEBFLAGS)
@@ -51,10 +54,7 @@ shift,signed-integer-overflow,undefined,unreachable,vla-bound,vptr
 #EXTRA_FLAGS used in linking in debug mode
 EXTRA_FLAGS =
 
-OUTFILE_NAME = bin_tree.out
-OUT_O_DIR = build
-COMMONINC = -I./inc
-SRC = ./src
+
 ROOT_DIR:=$(shell dirname $(realpath $(firstword $(MAKEFILE_LIST)))) #path to makefile
 
 ifeq ($(MODE),DEBUG)
@@ -64,30 +64,66 @@ ifeq ($(MODE),DEBUG)
 endif
 
 
-
 override CFLAGS += $(COMMONINC) # CFLAGS - environment variable. We can change it using only override, but not +=, :=, =
 
 #There are src folder files. We can use wildcard $(SRC_DIR)/*.cpp, but it isn't a good manner
+
+
+
+
+
+
+
+
+
+
+
+
+
+#/---------------------------PROJECT_SRC_CONFIG--------------------\#
+PROJECT_NAME = bin_tree
 CSRC = main.cpp src/bin_tree_err_proc.cpp src/bin_tree_loger.cpp src/bin_tree_proc.cpp
 LOGS_DIR = ./logs
-#/---------------------------SUBMODULES--------------------\#
+OUT_O_DIR = build
+COMMONINC = -I./inc
+SRC = ./src
+#/---------------------------PROJECT_SRC_CONFIG--------------------\#
+
+#/---------------------------SUBMODULES_CONFIG--------------------\#
 SUBMODULES = stack
-COMMONINC += $(addsuffix /inc,-I./$(SUBMODULES))
-CSRC += $(wildcard $(addsuffix /src,$(SUBMODULES))/*.cpp)
-#/---------------------------SUBMODULES--------------------\#
+#/---------------------------SUBMODULES_CONFIG--------------------\#
 
+
+
+
+
+
+
+
+
+
+
+
+#/---------------------------PROJECT_PROCESSING--------------------\#
+SO_LIB_NAME = $(PROJECT_NAME)
+OUTFILE_NAME = $(PROJECT_NAME).out
 COBJ := $(addprefix $(OUT_O_DIR)/,$(CSRC:.cpp=.o))
+DEPS = $(COBJ:.o=.d)
+#/---------------------------PROJECT_PROCESSING--------------------\#
 
-
-
-
-
-
-
-
+#/---------------------------SUBMODULES_PROCESSING--------------------\#
+SO_LIBS_PATHES = $(foreach item,$(SUBMODULES),./$(item)/libs)
+SO_LIBS_START_FILES = $(foreach item,$(SO_LIBS_PATHES), $(wildcard $(item)/*.so))
+SO_LIBS_RAW_FILES = $(foreach item,$(SO_LIBS_PATHES), \
+	$(foreach file,$(wildcard $(item)/*.so),$(subst $(item)/lib,,$(file))))
+SO_LIBS_FILES = $(foreach item,$(SO_LIBS_RAW_FILES),$(subst .so,,$(item)))
+COMMONINC += $(foreach item,$(SUBMODULES), -I./$(item)/inc)
+LDFLAGS += $(foreach item,$(SUBMODULES), -L ./$(item)/libs)
+LDFLAGS += $(foreach item,$(SO_LIBS_FILES), -l $(item))
+LAUNCH_PREFLAGS = LD_LIBRARY_PATH=$(subst $(space),:,$(SO_LIBS_PATHES))
+#/---------------------------SUBMODULES_PROCESSING--------------------\#
 
 #":=" - forced assignment (not lazy)
-DEPS = $(COBJ:.o=.d)
 
 
 
@@ -103,12 +139,33 @@ DEPS = $(COBJ:.o=.d)
 
 all: $(OUT_O_DIR)/$(OUTFILE_NAME) # Target all depends on "$(OUTFILE_NAME)" file creation. That is when we use "all" target, "$(OUTFILE_NAME)" file will be created
 
+
+
+
+launch:
+	$(LAUNCH_PREFLAGS) ./$(OUT_O_DIR)/$(OUTFILE_NAME)
+
+#FIXME: научится автоматически создавать динамические библиотеки сабмодулей. cd submodule_path && make DynLibGen
+
+DynLibGen: $(COBJ)
+	@mkdir -p libs
+
+#copying all contaiment '/libs' directory of all submodules
+	$(foreach path,$(SO_LIBS_PATHES), \
+		$(foreach item,$(wildcard $(path)/*.so), \
+			cp $(item) ./libs/$(subst $(path)/,,$(item)); \
+		) \
+	)
+#creation dynamic lib of project source files
+	@$(CC) -shared $(filter-out %main.o, $(COBJ)) -o libs/lib$(SO_LIB_NAME).so
+
+
 $(OUT_O_DIR)/$(OUTFILE_NAME): $(COBJ) # Each "$(OUTFILE_NAME)" file depends on objects after ":". If we touch "$(OUTFILE_NAME)", all files from "$(COBJ)" will be touched
 # All $(COBJ) files will be linked and converted into "$@" file i.e. "$(OUTFILE_NAME)". Note: "$(OUTFILE_NAME)" is executable project file
 # echo $^ -> main.o args_proc.o conf_ctor.o error_processing.o output.o stack_funcs.o
 # $@ - target
 #LINKING!!!
-	@$(CC) $^ -o $@ $(LDFLAGS) $(EXTRA_FLAGS)
+	$(CC) $^ -o $@ $(LDFLAGS) $(EXTRA_FLAGS)
 
 # static pattern rule to not redefine generaic one
 #@D - target directory

@@ -45,7 +45,6 @@ int main() {
     TreeLogDump(&tree);
 
 
-
     bin_tree_dtor(&tree);
     return 0;
 }
