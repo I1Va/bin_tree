@@ -49,7 +49,6 @@ bool bin_tree_dtor(bin_tree_t *tree) {
     for (size_t i = 0; i < tree->node_stack.size; i++) {
 
         bin_tree_elem_t *node_ptr = *(bin_tree_elem_t **) stack_get_elem(&tree->node_stack, i, &last_stack_error);
-        printf("deleting node : {%d}\n", node_ptr->data);
 
         if (last_stack_error != STK_ERR_OK) {
             debug("stack get elem by idx: [%lu] failed", i);
@@ -100,34 +99,51 @@ bin_tree_elem_t *bin_tree_create_node(bin_tree_t *tree, bin_tree_elem_t *prev, c
     return node;
 }
 
-void bin_tree_push_val(bin_tree_t *tree, bin_tree_elem_t *cur_node, bin_tree_elem_value_t val) {
-    if (val < cur_node->data) {
+int node_t_cmp(const bin_tree_elem_value_t node1, const bin_tree_elem_value_t node2) {
+    return node1.value < node2.value;
+}
+
+void node_t_get_label(char *dest, const size_t max_n, const bin_tree_elem_t *node) {
+    snprintf(dest, max_n, "\"{val: %d | name: '%s' | {<left> %p | <right> %p}}\"",
+         node->data.value, node->data.name, node->left, node->right);
+}
+
+void node_t_get_outp(char *dest, const size_t max_n, const bin_tree_elem_t *node) {
+    snprintf(dest, max_n, "%d", node->data.value);
+}
+
+void bin_tree_push_val(bin_tree_t *tree, bin_tree_elem_t *cur_node, bin_tree_elem_value_t val,
+    int (*compare_func)(const bin_tree_elem_value_t node1, const bin_tree_elem_value_t node2)) {
+    if (compare_func(val, cur_node->data)) {
         if (!cur_node->left) {
             bin_tree_create_node(tree, cur_node, true, NULL, NULL, val);
         } else {
-            bin_tree_push_val(tree, cur_node->left, val);
+            bin_tree_push_val(tree, cur_node->left, val, compare_func);
         }
     } else {
         if (!cur_node->right) {
             bin_tree_create_node(tree, cur_node, false, NULL, NULL, val);
         } else {
-            bin_tree_push_val(tree, cur_node->right, val);
+            bin_tree_push_val(tree, cur_node->right, val, compare_func);
         }
     }
 }
 
-void bin_tree_print(bin_tree_elem_t *node) {
+void bin_tree_print(bin_tree_elem_t *node, void (*outp_func)(char *dest, const size_t maxn_n, const bin_tree_elem_t *node)) {
     if (!node) {
         return;
     }
     printf("(");
 
     if (node->left) {
-        bin_tree_print(node->left);
+        bin_tree_print(node->left, outp_func);
     }
-    printf("%d", node->data);
+    char node_label[NODE_LABEL_MAX_SZ] = {};
+    outp_func(node_label, NODE_LABEL_MAX_SZ, node);
+    printf("%s", node_label);
+
     if (node->right) {
-        bin_tree_print(node->right);
+        bin_tree_print(node->right, outp_func);
     }
 
     printf(")");

@@ -11,8 +11,32 @@
 
 #include "bin_tree_proc.h"
 
+
+const char LOG_IMG_DIR_NAME[] = "imgs";
+const char LOG_GRAPHVIZ_CODE_DIR_NAME[] = "graphviz_code_dir";
+
 const int EDGE_MAX_WEIGHT = 1024;
 const int SIMP_EDGE_WIDTH = 5;
+
+const size_t BORDER_SZ = 100;
+const size_t LOG_WIDTH_VAL = 75;
+const size_t NODE_LABEL_MAX_SZ = 128;
+
+
+const size_t MAX_DIGITS_N = 32;
+
+const size_t MAX_FMT_SZ = 32;
+
+const size_t MAX_LOG_DIR_SZ = 128;
+
+
+
+const size_t MAX_SHORT_IMG_PATH_SZ = 128;
+const size_t MAX_IMG_DIR_SZ = sizeof(LOG_IMG_DIR_NAME) + MAX_LOG_DIR_SZ + MAX_FMT_SZ;
+const size_t MAX_GRAPHVIZ_DIR_SZ = MAX_LOG_DIR_SZ + sizeof(LOG_GRAPHVIZ_CODE_DIR_NAME) + MAX_FMT_SZ;
+const size_t MAX_GRAPHVIZ_FILE_SZ = MAX_GRAPHVIZ_DIR_SZ + MAX_FMT_SZ + MAX_DIGITS_N;
+const size_t MAX_IMG_FILE_NAME_SZ = MAX_IMG_DIR_SZ + MAX_FMT_SZ + MAX_DIGITS_N;
+const size_t MAX_SYSTEM_COMMAND_SIZE = MAX_IMG_DIR_SZ + MAX_FMT_SZ + MAX_GRAPHVIZ_FILE_SZ + MAX_IMG_FILE_NAME_SZ;
 
 enum bin_tree_log_t {
     DL_LOG_ANALYS = 0,
@@ -21,13 +45,10 @@ enum bin_tree_log_t {
 };
 
 struct log_dir_t {
-    char log_dir[MAX_LOG_FILE_PATH_SZ];
-    char img_dir[MAX_LOG_FILE_PATH_SZ];
-    char graphviz_codes_dir[MAX_LOG_FILE_PATH_SZ];
+    char log_dir[MAX_LOG_DIR_SZ];
+    char img_dir[MAX_IMG_DIR_SZ];
+    char graphviz_codes_dir[MAX_GRAPHVIZ_DIR_SZ];
 };
-
-const size_t BORDER_SZ = 100;
-const size_t LOG_WIDTH_VAL = 75;
 
 bool create_logs_dir(const char log_dir[]);
 
@@ -57,11 +78,14 @@ void graphviz_start_graph(FILE *graphviz_code_file);
 
 void graphviz_end_graph(FILE *graphviz_code_file);
 
-void graphviz_make_node(FILE *graphviz_code_file, bin_tree_elem_t *node);
+void graphviz_make_node(FILE *graphviz_code_file, bin_tree_elem_t *node,
+    void (*label_func)(char *dest, const size_t max_n, const bin_tree_elem_t *node));
+
+void graphviz_make_left_edge(FILE *graphviz_code_file, bin_tree_elem_t *node_ptr1, bin_tree_elem_t *node_ptr2, const char color[], int penwidth);
+
+void graphviz_make_right_edge(FILE *graphviz_code_file, bin_tree_elem_t *node_ptr1, bin_tree_elem_t *node_ptr2, const char color[], int penwidth);
 
 void graphviz_make_heavy_unvisible_edge(FILE *graphviz_code_file, bin_tree_elem_t *node_ptr1, bin_tree_elem_t *node_ptr2);
-
-void graphviz_make_edge(FILE *graphviz_code_file, bin_tree_elem_t *node_ptr1, bin_tree_elem_t *node_ptr2, const char color[], int penwidth);
 
 void bin_tree_log_html_insert_image(FILE *log_output_file_ptr, char short_img_path[], int width_percent);
 

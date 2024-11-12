@@ -19,10 +19,9 @@ const size_t ERR_DESCR_MAX_SIZE = 128;
 const size_t MAX_NODES_CNT = 1ull << 17;
 
 void bin_tree_err_get_descr(enum bin_tree_err_t err_code, char err_descr_str[]);
-
 void bin_tree_err_add(enum bin_tree_err_t *dest, enum bin_tree_err_t add);
-
 void bin_tree_verify(const bin_tree_t tree, bin_tree_err_t *return_err);
+void bin_tree_rec_nodes_cnt(bin_tree_elem_t *node, size_t *nodes_cnt);
 
 #ifdef _DEBUG
     #define DEBUG_BT_LIST_ERROR(err_code, str_, ...) {                                                      \

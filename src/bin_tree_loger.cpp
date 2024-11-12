@@ -122,11 +122,8 @@ log_dir_t bin_tree_make_graphviz_dirs(char log_file_path[]) {
     char *log_dir_ptr = strrchr(log_file_path_ptr, '/');
     memcpy(logs_dir_obj.log_dir, log_file_path, (size_t) (log_dir_ptr - log_file_path) * sizeof(char));
 
-
-
-
-    snprintf(logs_dir_obj.img_dir, MAX_LOG_FILE_PATH_SZ, "%s/%s", logs_dir_obj.log_dir, LOG_IMG_DIR_NAME);
-    snprintf(logs_dir_obj.graphviz_codes_dir, MAX_LOG_FILE_PATH_SZ, "%s/%s", logs_dir_obj.log_dir, LOG_GRAPHVIZ_CODE_DIR_NAME);
+    snprintf(logs_dir_obj.img_dir, MAX_IMG_DIR_SZ, "%s/%s", logs_dir_obj.log_dir, LOG_IMG_DIR_NAME);
+    snprintf(logs_dir_obj.graphviz_codes_dir, MAX_GRAPHVIZ_DIR_SZ, "%s/%s", logs_dir_obj.log_dir, LOG_GRAPHVIZ_CODE_DIR_NAME);
 
     char mkdir_img_command[MAX_SYSTEM_COMMAND_SIZE] = {};
     snprintf(mkdir_img_command, MAX_SYSTEM_COMMAND_SIZE, "mkdir -p %s", logs_dir_obj.img_dir);
@@ -158,23 +155,24 @@ void graphviz_end_graph(FILE *graphviz_code_file) {
     fclose(graphviz_code_file);
 }
 
-void graphviz_make_node(FILE *graphviz_code_file, bin_tree_elem_t *node) { // FIXME: function depends on bin_tree_elem_value_t
-    fprintf(graphviz_code_file, "   NODE%p[pin=true,shape=\"Mrecord\",label=\"{data: %d | {<left> %p | <right> %p}}\"];\n", node, node->data, node->left, node->right);
-} //
+void graphviz_make_node(FILE *graphviz_code_file, bin_tree_elem_t *node,
+    void (*label_func)(char *dest, const size_t max_n, const bin_tree_elem_t *node))
+{
+    char node_label[NODE_LABEL_MAX_SZ] = {};
+    label_func(node_label, NODE_LABEL_MAX_SZ, node);
+    fprintf(graphviz_code_file, "   NODE%p[pin=true,shape=\"Mrecord\",label=%s];\n", node, node_label);
+}
 
 void graphviz_make_heavy_unvisible_edge(FILE *graphviz_code_file, bin_tree_elem_t *node_ptr1, bin_tree_elem_t *node_ptr2) {
     fprintf(graphviz_code_file, "   NODE%p -> NODE%p [weight=%d,color=\"white\"];\n", node_ptr1, node_ptr2, EDGE_MAX_WEIGHT);
-    // FIXME: кажется, что делать рербра белыми - костыль
 }
 
 void graphviz_make_left_edge(FILE *graphviz_code_file, bin_tree_elem_t *node_ptr1, bin_tree_elem_t *node_ptr2, const char color[] = "black", int penwidth=SIMP_EDGE_WIDTH) {
     fprintf(graphviz_code_file, "   NODE%p:left -> NODE%p [color=\"%s\",penwidth=%d];\n", node_ptr1, node_ptr2, color, penwidth);
-    // FIXME: кажется, что делать рербра белыми - костыль
 }
 
 void graphviz_make_right_edge(FILE *graphviz_code_file, bin_tree_elem_t *node_ptr1, bin_tree_elem_t *node_ptr2, const char color[] = "black", int penwidth=SIMP_EDGE_WIDTH) {
     fprintf(graphviz_code_file, "   NODE%p:right -> NODE%p [color=\"%s\",penwidth=%d];\n", node_ptr1, node_ptr2, color, penwidth);
-    // FIXME: кажется, что делать рербра белыми - костыль
 }
 
 void bin_tree_log_html_insert_image(FILE *log_output_file_ptr, char short_img_path[], int width_percent) {
@@ -184,7 +182,9 @@ void bin_tree_log_html_insert_image(FILE *log_output_file_ptr, char short_img_pa
 }
 
 void tree_node_fprintf(FILE *stream, void *elem_ptr) {
-    fprintf(stream, "{%d}", (*(bin_tree_elem_t **) elem_ptr)->data);
+    char node_label[NODE_LABEL_MAX_SZ] = {};
+    node_t_get_outp(node_label, NODE_LABEL_MAX_SZ, (bin_tree_elem_t *) elem_ptr);
+    fprintf(stream, "%s", node_label);
 }
 
 bool bin_tree_generate_graph_img(bin_tree_t *tree, char short_img_path[]) {
@@ -192,13 +192,13 @@ bool bin_tree_generate_graph_img(bin_tree_t *tree, char short_img_path[]) {
 
     int graph_num = get_dir_files_count(log_dir_obj.graphviz_codes_dir);
 
-    char graphviz_code_file_name[MAX_LOG_FILE_PATH_SZ] = {};
-    snprintf(graphviz_code_file_name, MAX_LOG_FILE_PATH_SZ, "%s/%d.dot", log_dir_obj.graphviz_codes_dir, graph_num);
+    char graphviz_code_file_name[MAX_GRAPHVIZ_FILE_SZ] = {};
+    snprintf(graphviz_code_file_name, MAX_GRAPHVIZ_FILE_SZ, "%s/%d.dot", log_dir_obj.graphviz_codes_dir, graph_num);
     // printf("gr file: %s\n", graphviz_code_file_name);
-    char img_file_name[MAX_LOG_FILE_PATH_SZ] = {};
+    char img_file_name[MAX_IMG_FILE_NAME_SZ] = {};
 
-    snprintf(img_file_name, MAX_LOG_FILE_PATH_SZ, "%s/%d.png", log_dir_obj.img_dir, graph_num);
-    snprintf(short_img_path, MAX_LOG_FILE_PATH_SZ, "%s/%d.png", LOG_IMG_DIR_NAME, graph_num);
+    snprintf(img_file_name, MAX_IMG_FILE_NAME_SZ, "%s/%d.png", log_dir_obj.img_dir, graph_num);
+    snprintf(short_img_path, MAX_SHORT_IMG_PATH_SZ, "%s/%d.png", LOG_IMG_DIR_NAME, graph_num);
     // printf("img file: %s\n", graphviz_code_file_name);
 
     FILE* graphviz_code_file = fopen(graphviz_code_file_name, "w");
@@ -217,7 +217,7 @@ bool bin_tree_generate_graph_img(bin_tree_t *tree, char short_img_path[]) {
             return false;
         }
 
-        graphviz_make_node(graphviz_code_file, node);
+        graphviz_make_node(graphviz_code_file, node, node_t_get_label);
 
     }
 
@@ -304,7 +304,7 @@ void bin_tree_log_dump(bin_tree_t *tree, const char file_name[], const char func
     fprintf_html_red(tree->log_file_ptr, "tree [%p] at %s:%d\n", tree, file_name, line_idx);
     fprintf_html_grn(tree->log_file_ptr, "size: [%5lu]\n", tree->n_nodes);
 
-    char short_img_path[MAX_LOG_FILE_PATH_SZ] = {};
+    char short_img_path[MAX_SHORT_IMG_PATH_SZ] = {};
     bin_tree_generate_graph_img(tree, short_img_path);
     bin_tree_log_html_insert_image(tree->log_file_ptr, short_img_path, LOG_WIDTH_VAL);
     // for (int i = 0; i < tree.size; i++) {
