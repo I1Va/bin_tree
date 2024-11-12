@@ -9,7 +9,7 @@ const size_t MAX_NODE_STRING_SZ = 128;
 const size_t MAX_LOG_FILE_PATH_SZ = 128;
 
 struct node_t {
-    bool leaf;
+    int value;
     char *name;
 };
 
