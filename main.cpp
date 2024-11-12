@@ -1,7 +1,7 @@
 #include "bin_tree_proc.h"
 #include "bin_tree_err_proc.h"
 #include "bin_tree_loger.h"
-#include <cstdlib>
+#include <stdlib.h>
 
 #include "error_processing.h"
 #include "stack_funcs.h"

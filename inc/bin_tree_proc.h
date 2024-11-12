@@ -13,7 +13,6 @@ struct node_t {
     char name[MAX_NODE_STRING_SZ];
 };
 
-
 typedef node_t bin_tree_elem_value_t;
 
 struct bin_tree_elem_t {
@@ -47,6 +46,7 @@ bin_tree_elem_t *bin_tree_create_node(bin_tree_t *tree, bin_tree_elem_t *prev, c
     bin_tree_elem_t *left, bin_tree_elem_t *right, const bin_tree_elem_value_t data);
 void bin_tree_print(bin_tree_elem_t *node, void (*outp_func)(char *dest, const size_t maxn_n, const bin_tree_elem_t *node));
 bool bin_tree_clear(bin_tree_t *tree);
+
 int node_t_cmp(const bin_tree_elem_value_t node1, const bin_tree_elem_value_t node2);
 void node_t_get_label(char *dest, const size_t max_n, const bin_tree_elem_t *node);
 void node_t_get_outp(char *dest, const size_t max_n, const bin_tree_elem_t *node);
