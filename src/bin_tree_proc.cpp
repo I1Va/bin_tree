@@ -98,7 +98,7 @@ bin_tree_elem_t *bin_tree_create_node(bin_tree_t *tree, bin_tree_elem_t *prev, c
     node->right = right;
     node->data = data;
     node->left_son = left_son;
-
+    
     return node;
 }
 
