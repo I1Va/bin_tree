@@ -30,6 +30,7 @@ bool bin_tree_ctor(bin_tree_t *tree, const char log_path[]) {
         DEBUG_BT_LIST_ERROR(BT_ERR_FILE_OPEN, "path: {%s}", log_path)
         CLEAR_MEMORY(exit_mark)
     }
+
     setbuf(tree->log_file_ptr, NULL); // disable buffering
 
     return true;
