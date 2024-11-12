@@ -9,8 +9,8 @@ const size_t MAX_NODE_STRING_SZ = 128;
 const size_t MAX_LOG_FILE_PATH_SZ = 128;
 
 struct node_t {
-    int value;
-    char name[MAX_NODE_STRING_SZ];
+    bool leaf;
+    char *name;
 };
 
 typedef node_t bin_tree_elem_value_t;
