@@ -134,7 +134,7 @@ void bin_tree_push_val(bin_tree_t *tree, bin_tree_elem_t *cur_node, bin_tree_ele
     }
 }
 
-void bin_tree_fprintf(bin_tree_elem_t *node, void (*outp_func)(char *dest, const size_t maxn_n, const bin_tree_elem_t *node)) {
+void bin_tree_print(bin_tree_elem_t *node, void (*outp_func)(char *dest, const size_t maxn_n, const bin_tree_elem_t *node)) {
     if (!node) {
         return;
     }
