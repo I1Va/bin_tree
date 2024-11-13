@@ -66,7 +66,7 @@ bool bin_tree_dtor(bin_tree_t *tree) {
     return true;
 }
 
-bin_tree_elem_t *bin_tree_create_node(bin_tree_t *tree, bin_tree_elem_t *prev, const bool left_son,
+bin_tree_elem_t *bin_tree_create_node(bin_tree_t *tree, bin_tree_elem_t *prev, const bool is_node_left_son,
     bin_tree_elem_t *left, bin_tree_elem_t *right, const bin_tree_elem_value_t data)
 {
     tree->n_nodes++;
@@ -86,7 +86,7 @@ bin_tree_elem_t *bin_tree_create_node(bin_tree_t *tree, bin_tree_elem_t *prev, c
     }
 
     if (prev) {
-        if (left_son) {
+        if (is_node_left_son) {
         prev->left = node;
         } else {
             prev->right = node;
@@ -97,8 +97,8 @@ bin_tree_elem_t *bin_tree_create_node(bin_tree_t *tree, bin_tree_elem_t *prev, c
     node->left = left;
     node->right = right;
     node->data = data;
-    node->left_son = left_son;
-    
+    node->is_node_left_son = is_node_left_son;
+
     return node;
 }
 
@@ -134,7 +134,7 @@ void bin_tree_push_val(bin_tree_t *tree, bin_tree_elem_t *cur_node, bin_tree_ele
     }
 }
 
-void bin_tree_print(bin_tree_elem_t *node, void (*outp_func)(char *dest, const size_t maxn_n, const bin_tree_elem_t *node)) {
+void bin_tree_fprintf(bin_tree_elem_t *node, void (*outp_func)(char *dest, const size_t maxn_n, const bin_tree_elem_t *node)) {
     if (!node) {
         return;
     }

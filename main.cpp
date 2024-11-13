@@ -21,24 +21,24 @@ int main() {
 
     // bin_tree_elem_value_t node = {52, "fwef"};
 
-    bin_tree_elem_t *root = bin_tree_create_node(&tree, NULL, false, NULL, NULL, {1, "232"});
+    bin_tree_elem_t *root = bin_tree_create_node(&tree, NULL, false, NULL, NULL, {1, "root"});
     tree.root = root;
 
     for (int i = 0; i < 20; i++) {
         int val = rand() % 128;
         printf("added {%d}\n", val);
-        bin_tree_push_val(&tree, tree.root, {(bool) val, "2232"}, node_t_cmp);
+        bin_tree_push_val(  &tree, tree.root, {val, ""}, node_t_cmp);
     }
 
     bin_tree_print(tree.root, node_t_get_outp); printf("\n");
 
     stk_err last_stk_err = STK_ERR_OK;
 
-    bin_tree_elem_t *node1 = *(bin_tree_elem_t **)stack_get_elem(&tree.node_stack, 3, &last_stk_err);
-    bin_tree_elem_t *node2 = *(bin_tree_elem_t **)stack_get_elem(&tree.node_stack, 5, &last_stk_err);
+    // bin_tree_elem_t *node1 = *(bin_tree_elem_t **)stack_get_elem(&tree.node_stack, 3, &last_stk_err);
+    // bin_tree_elem_t *node2 = *(bin_tree_elem_t **)stack_get_elem(&tree.node_stack, 5, &last_stk_err);
 
-    node1->left = node2;
-    node2->right = node1;
+    // node1->left = node2;
+    // node2->right = node1;
 
     bin_tree_verify(tree, &last_err);
 

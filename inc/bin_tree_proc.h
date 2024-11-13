@@ -17,7 +17,7 @@ typedef node_t bin_tree_elem_value_t;
 
 struct bin_tree_elem_t {
     bin_tree_elem_t *prev;
-    bool left_son;
+    bool is_node_left_son;
 
     bin_tree_elem_t *left;
     bin_tree_elem_t *right;
