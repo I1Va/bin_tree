@@ -1,11 +1,5 @@
 #include <stdlib.h>
 #include "error_processing.h"
-struct node_t {
-    int value;
-    char *name;
-};
-
-typedef node_t bin_tree_elem_value_t;
 #include "bin_tree_proc.h"
 #include "bin_tree_err_proc.h"
 

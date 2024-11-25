@@ -1,13 +1,13 @@
 #include <cassert>
 #include <cstdlib>
 #include <stdlib.h>
-
 #include "bin_tree_proc.h"
 #include "error_processing.h"
 #include "general.h"
 #include "bin_tree_err_proc.h"
 
 #include "stack_funcs.h"
+
 
 bool bin_tree_ctor(bin_tree_t *tree, const char log_path[]) {
     stk_err stk_last_err = STK_ERR_OK;
@@ -201,3 +201,4 @@ void bin_tree_verify(const bin_tree_t tree, bin_tree_err_t *return_err) {
         return;
     }
 }
+
