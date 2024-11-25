@@ -82,7 +82,7 @@ override CFLAGS += $(COMMONINC) # CFLAGS - environment variable. We can change i
 
 #/---------------------------PROJECT_SRC_CONFIG--------------------\#
 PROJECT_NAME = bin_tree
-CSRC = main.cpp src/bin_tree_err_proc.cpp src/bin_tree_loger.cpp src/bin_tree_proc.cpp
+CSRC = main.cpp src/bin_tree_err_proc.cpp src/bin_tree_proc.cpp
 LOGS_DIR = ./logs
 OUT_O_DIR = build
 COMMONINC = -I./inc
@@ -90,7 +90,7 @@ SRC = ./src
 #/---------------------------PROJECT_SRC_CONFIG--------------------\#
 
 #/---------------------------SUBMODULES_CONFIG--------------------\#
-SUBMODULES = stack
+SUBMODULES = string_funcs stack
 #/---------------------------SUBMODULES_CONFIG--------------------\#
 
 
@@ -143,7 +143,7 @@ all: $(OUT_O_DIR)/$(OUTFILE_NAME) # Target all depends on "$(OUTFILE_NAME)" file
 
 
 launch:
-	$(LAUNCH_PREFLAGS) ./$(OUT_O_DIR)/$(OUTFILE_NAME)
+	@$(LAUNCH_PREFLAGS) ./$(OUT_O_DIR)/$(OUTFILE_NAME)
 
 #FIXME: научится автоматически создавать динамические библиотеки сабмодулей. cd submodule_path && make DynLibGen
 
@@ -151,7 +151,7 @@ DynLibGen: $(COBJ)
 	@mkdir -p libs
 
 #copying all contaiment '/libs' directory of all submodules
-	$(foreach path,$(SO_LIBS_PATHES), \
+	@$(foreach path,$(SO_LIBS_PATHES), \
 		$(foreach item,$(wildcard $(path)/*.so), \
 			cp $(item) ./libs/$(subst $(path)/,,$(item)); \
 		) \
@@ -165,7 +165,7 @@ $(OUT_O_DIR)/$(OUTFILE_NAME): $(COBJ) # Each "$(OUTFILE_NAME)" file depends on o
 # echo $^ -> main.o args_proc.o conf_ctor.o error_processing.o output.o stack_funcs.o
 # $@ - target
 #LINKING!!!
-	$(CC) $^ -o $@ $(LDFLAGS) $(EXTRA_FLAGS)
+	@$(CC) $^ -o $@ $(LDFLAGS) $(EXTRA_FLAGS)
 
 # static pattern rule to not redefine generaic one
 #@D - target directory

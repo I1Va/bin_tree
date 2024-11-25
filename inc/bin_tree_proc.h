@@ -7,13 +7,7 @@
 
 const size_t MAX_NODE_STRING_SZ = 128;
 const size_t MAX_LOG_FILE_PATH_SZ = 128;
-
-struct node_t {
-    int value;
-    char *name;
-};
-
-typedef node_t bin_tree_elem_value_t;
+const size_t NODE_LABEL_MAX_SZ = 128;
 
 struct bin_tree_elem_t {
     bin_tree_elem_t *prev;
@@ -52,5 +46,11 @@ bool bin_tree_clear(bin_tree_t *tree);
 int node_t_cmp(const bin_tree_elem_value_t node1, const bin_tree_elem_value_t node2);
 void node_t_get_label(char *dest, const size_t max_n, const bin_tree_elem_t *node);
 void node_t_get_outp(char *dest, const size_t max_n, const bin_tree_elem_t *node);
+
+bool bin_tree_generate_graph_img(bin_tree_t *tree, char short_img_path[]);
+void bin_tree_log_dump(bin_tree_t *tree, const char file_name[], const char func_name[], const int line_idx);
+
+void bin_tree_verify(const bin_tree_t tree, bin_tree_err_t *return_err);
+void bin_tree_rec_nodes_cnt(bin_tree_elem_t *node, size_t *nodes_cnt);
 
 #endif // BIN_TREE_PROC_H

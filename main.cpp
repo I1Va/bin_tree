@@ -1,23 +1,21 @@
+#include <stdlib.h>
+#include "error_processing.h"
+struct node_t {
+    int value;
+    char *name;
+};
+
+typedef node_t bin_tree_elem_value_t;
 #include "bin_tree_proc.h"
 #include "bin_tree_err_proc.h"
-#include "bin_tree_loger.h"
-#include <stdlib.h>
-
-#include "error_processing.h"
-#include "stack_funcs.h"
-#include "stack_output.h"
 
 const char logs_dir[] = "./logs";
 
 int main() {
-    create_logs_dir(logs_dir);
-
     bin_tree_err_t last_err = BT_ERR_OK;
 
     bin_tree_t tree = {};
     bin_tree_ctor(&tree, "./logs/log.html");
-
-    bin_tree_log_file_start(tree.log_file_ptr);
 
     // bin_tree_elem_value_t node = {52, "fwef"};
 
@@ -41,11 +39,6 @@ int main() {
     // node2->right = node1;
 
     bin_tree_verify(tree, &last_err);
-
-    DUMP(&tree.node_stack, stdout, tree_node_fprintf);
-
-    TreeLogDump(&tree);
-
 
     bin_tree_dtor(&tree);
     return 0;

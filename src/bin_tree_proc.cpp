@@ -3,14 +3,11 @@
 #include <stdlib.h>
 
 #include "bin_tree_proc.h"
-#include "bin_tree_loger.h"
 #include "error_processing.h"
 #include "general.h"
 #include "bin_tree_err_proc.h"
 
 #include "stack_funcs.h"
-#include "stack_output.h"
-
 
 bool bin_tree_ctor(bin_tree_t *tree, const char log_path[]) {
     stk_err stk_last_err = STK_ERR_OK;
@@ -176,4 +173,31 @@ bool bin_tree_clear(bin_tree_t *tree) {
     tree->root = NULL;
     tree->n_nodes = 0;
     return true;
+}
+
+void bin_tree_rec_nodes_cnt(bin_tree_elem_t *node, size_t *nodes_cnt) {
+    if (!node) {
+        return;
+    }
+    if (*nodes_cnt > MAX_NODES_CNT) {
+        return;
+    }
+
+    (*nodes_cnt)++;
+    if (node->left) {
+        bin_tree_rec_nodes_cnt(node->left, nodes_cnt);
+    }
+    if (node->right) {
+        bin_tree_rec_nodes_cnt(node->right, nodes_cnt);
+    }
+}
+
+void bin_tree_verify(const bin_tree_t tree, bin_tree_err_t *return_err) {
+    size_t nodes_cnt = 0;
+    bin_tree_rec_nodes_cnt(tree.root, &nodes_cnt);
+    if (nodes_cnt > MAX_NODES_CNT) {
+        bin_tree_err_add(return_err, BT_ERR_CYCLED);
+        debug("tree might be cycled. nodes cnt exceeds max nodes cnt value");
+        return;
+    }
 }
